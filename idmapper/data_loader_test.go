@@ -11,6 +11,11 @@ func TestLoad(t *testing.T) {
 	fmt.Println("Test start---------------")
 
 	resourceFile := "../data/idmapping.tsv"
-	Load(resourceFile)
+	table := Load(resourceFile)
 
+	numRecords := len(table.Entrez2Symbol)
+
+	if numRecords != 190475 {
+		t.Fail()
+	}
 }
