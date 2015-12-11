@@ -13,9 +13,26 @@ func TestLoad(t *testing.T) {
 	resourceFile := "../data/idmapping.tsv"
 	table := Load(resourceFile)
 
-	numRecords := len(table.Entrez2Symbol)
 
-	if numRecords != 190475 {
+	mapper := table.MappingTable
+	numKeys := len(mapper)
+
+
+	for key, _ := range mapper {
+		t.Log("Key# = ", key)
+	}
+
+	if numKeys != 4 {
+		t.Log("Num keys = ", numKeys)
 		t.Fail()
+	}
+
+	i := 0
+	for key, value :=range mapper["Symbol"] {
+		fmt.Println(key, " = ", value)
+		if i > 100 {
+			break
+		}
+		i++
 	}
 }
