@@ -100,3 +100,6 @@ Temporary Items
 data/.ipynb_checkpoints
 data/*.txt
 data/idmapping.tsv
+
+
+app

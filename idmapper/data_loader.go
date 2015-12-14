@@ -20,7 +20,7 @@ type ConversionTable struct {
 
 
 func Load(mappingFile string) *ConversionTable {
-	fmt.Println("Loading data into memory...")
+	fmt.Println("* Loading mapping data into memory...")
 
 	targetColumns := []string{"UniProtKB-AC", "UniProtKB-ID", "GeneID", "Ensembl", "Symbol"}
 
@@ -63,11 +63,11 @@ func Load(mappingFile string) *ConversionTable {
 	mappingTable := createMap(targetColumns, cols, &baseTable)
 
 	conv := ConversionTable{ MappingTable:mappingTable }
-//	checkMemory()
 
-
-	fmt.Println("Done!")
 	baseTable = nil
+
+	log.Println("Mapping table loaded.")
+	checkMemory()
 
 	return &conv
 }
