@@ -17,4 +17,4 @@ RUN go build app.go
 EXPOSE 3000
 
 # Run it!
-CMD ./app
+CMD ./app -service=idmapping -location="192.168.99.100"

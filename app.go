@@ -4,11 +4,11 @@ package main
 import (
 	"log"
 	"fmt"
-	"log/syslog"
 	"os"
 	builder "github.com/cytoscape-ci/service-go/servicebuilder"
 	"net"
 	"strconv"
+	"flag"
 )
 
 
@@ -20,7 +20,9 @@ const (
 	defServ = "127.0.0.1"
 )
 
-var syslogWriter *syslog.Writer
+
+var reg *builder.Registration
+var agent *string
 
 
 func init() {
@@ -28,52 +30,76 @@ func init() {
 	fmt.Println("Initializing API Server...")
 
 	// Init logger to use syslog
-	logger, err := syslog.New(
-		syslog.LOG_NOTICE|syslog.LOG_USER, serviceName)
-	if err != nil {
-		panic(err)
+//	logger, err := syslog.New(
+//		syslog.LOG_NOTICE|syslog.LOG_USER, serviceName)
+//	if err != nil {
+//		panic(err)
+//	}
+//
+//	log.SetOutput(logger)
+//	log.Println("* Logging start using syslog...")
+
+	// Parse parameters
+	reg, agent = buildReg()
+}
+
+
+func buildReg() (reg *builder.Registration, agent *string) {
+	// This is required!
+	name := flag.String("service", "", "Service name")
+	cap := flag.Int("cap", 4, "Number of instances")
+	ver := flag.String("version", "v1", "API version")
+	agentUrl := flag.String("agent", "http://192.168.99.100:8080/registration", "Submit Agent Location")
+	loc := flag.String("location", "192.168.99.100", "This API server Location")
+
+	flag.Parse()
+
+	if *name == "" {
+		log.Panic("Missing service endpoint name: You must provide it as -service param.")
+		os.Exit(1)
 	}
 
-	syslogWriter = logger
-	log.SetOutput(syslogWriter)
+	var myLoc string
+	if *loc == "" {
+		myLoc = getAddress()
+	} else {
+		myLoc = *loc
+	}
 
-	log.Println("* Logging start using syslog...")
+	myUrl := myLoc + ":" + strconv.Itoa(defPort)
+	log.Println("Service API Location:", myUrl)
+
+	instance := builder.Instance{Capacity: *cap, Location:myUrl}
+	reg = &builder.Registration {
+		Service: *name,
+		Version: *ver,
+		Instances: []builder.Instance{instance},
+	}
+
+	return reg, agentUrl
 }
 
 
 func main() {
+	go builder.RegisterService(*agent, reg)
 
-	myLoc := getAddress()
-	myUrl := myLoc + ":" + strconv.Itoa(defPort)
-	log.Println("Service API Location:", myUrl)
-
-	// Register service
-	// TODO: Use config file instead.
-
-	instance := builder.Instance{Capacity:4, Location:myUrl}
-	reg := &builder.Registration {
-		Service:     "idmapping",
-		Version: "v1",
-		Instances: []builder.Instance{instance},
-	}
-
-	err := builder.RegisterService("http://192.168.99.100:8080/registration", reg)
-	if err != nil {
-		log.Println(err)
-		log.Println("Could not register service.  Running in stand-alone mode.")
-	} else {
-		log.Println("Service registered to Agent")
-	}
-
+//	if err != nil {
+//		log.Println(err)
+//		log.Println("Could not register service.  Running in stand-alone mode.")
+//	} else {
+//		log.Println("Service registered to Agent")
+//	}
 
 	// Start API server
-	err = builder.StartServer(defPort)
+	err := builder.StartServer(defPort)
 
 	if err != nil {
 		log.Fatal("Could not start API server: ", err.Error())
 		os.Exit(1)
 	}
 }
+
+
 
 
 func getAddress() string {

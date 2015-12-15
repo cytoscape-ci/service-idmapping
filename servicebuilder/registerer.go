@@ -7,12 +7,16 @@ import (
 	"io/ioutil"
 	"errors"
 	"log"
+	"time"
 )
 
 const (
 	BodyType = "application/json"
 
 	defAgentUrl = "http://localhost:8080/registration"
+
+	interval = 10
+	retryMax = 10
 )
 
 
@@ -30,21 +34,33 @@ type Registration struct {
 
 // Register single service
 func RegisterService(agentUrl string, reg *Registration) error {
+
+	log.Println("Registration start...")
+
 	if agentUrl == "" {
 		agentUrl = defAgentUrl
 	}
+
 
 	// Can post multiple services.
 	var regs []*Registration
 	regs = append(regs, reg)
 
-	result, err := RegisterServices(agentUrl, regs)
+	retryCount := 0
 
-	if err == nil {
-		log.Println("Registered: ", result)
+	for retryCount < retryMax {
+		result, err := RegisterServices(agentUrl, regs)
+
+		if err == nil {
+			log.Println("Registered: ", result)
+			break
+		}
+
+		log.Println("Retry in 10 sec...")
+		time.Sleep(interval * time.Second)
 	}
 
-	return err
+	return nil
 }
 
 

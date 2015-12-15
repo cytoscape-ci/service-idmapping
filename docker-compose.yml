@@ -1,0 +1,26 @@
+# Sandbox to play with the all service components
+
+#fluentd:
+#  image: fluent/fluentd
+#  links:
+#    - "elsa"
+#  ports:
+#    - "22422:22422"
+
+elsa:
+  image: cytoscape/elsa
+  expose:
+    - 8080
+  ports:
+    - "8080:8080"
+  command: shell
+
+idmapper:
+  build: .
+  links:
+    - elsa
+  ports:
+    - "3000:3000"
+  expose:
+    - 3000
+  command: ./app -service=idmapping -agent="http://elsa:8080/registration"
