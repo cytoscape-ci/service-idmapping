@@ -337,10 +337,11 @@ the service returns this error.
 
 * Code: 400
 * Body:
+
   ```json
   {
-    "code": 400
-    "message": "(Human readable description of the error)"
+    "code": 400,
+    "message": "Invalid query.  Probably you missed ids parameter?",
     "error": "(Any error massage from the system.)"
   }
   ```
@@ -348,18 +349,23 @@ the service returns this error.
 
 ### Unsupported Method
 
-You will see this 
+You will see this when you use unsupported HTTP method for an endpoint.
+For example you need to use __POST__ method to call this ID Mapping service, and you will get this error 
+when you simply call the URL with GET method.
 
 * Code: 405
 * Body:
+
   ```json
   {
-    "code": 400
-    "message": "(Human readable description of the error)"
-    "error": "(Any error massage from the system.)"
+    "code": 405,
+    "message": "Unsupported HTTP request type.",
+    "error": "You need to use POST method to use this endpoint."
   }
   ```
+
 * Example
+
 
 ### Resource Not found
 
@@ -367,22 +373,26 @@ If the service cannot find any result, it returns this error.
 
 * Code: 404
 * Body:
+
   ```json
   {
-    "code": 404
-    "message": "(Human readable description of the error)"
-    "error": "(Any error massage from the system.)"
+    "code": 404,
+    "message": "No resource found for your query.",
+    "error": "No maching IDs for your inputs"
   }
   ```
 
 ### Unexpected server side error
 
+Usually this should not happen.  In Go, if critical panic happens due to bugs, this will be returned to the user.
+
 * Code: 500
 * Body:
+
   ```json
   {
-    "code": 500
-    "message": "(Human readable description of the error)"
-    "error": "(Any error massage from the system. e.g. panic message)"
+    "code": 500,
+    "message": "Something wrong happened to the service.  Now is the good time to call admin..."
+    "error": "(stack trace, panic message, heap dump, etc.)"
   }
   ```
