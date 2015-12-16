@@ -1,9 +1,7 @@
 package main
 
-
 import (
 	"log"
-	"fmt"
 	"os"
 	builder "github.com/cytoscape-ci/service-go/servicebuilder"
 	"net"
@@ -12,94 +10,59 @@ import (
 )
 
 
-const (
-	serviceName = "go-service"
-	defPort = 3000
 
-	defAgentUrl = "http://localhost:8080/register"
-	defServ = "127.0.0.1"
-)
-
-
-var reg *builder.Registration
-var agent *string
-
-
-func init() {
-	// Initialize logging
-	fmt.Println("Initializing API Server...")
-
-	// Init logger to use syslog
-//	logger, err := syslog.New(
-//		syslog.LOG_NOTICE|syslog.LOG_USER, serviceName)
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	log.SetOutput(logger)
-//	log.Println("* Logging start using syslog...")
-
-	// Parse parameters
-	reg, agent = buildReg()
-}
-
-
-func buildReg() (reg *builder.Registration, agent *string) {
+func buildReg() (reg *builder.Registration, agent *string, port *int) {
 	// This is required!
-	name := flag.String("service", "", "Service name")
+	name := flag.String("id", "", "Service name")
 	cap := flag.Int("cap", 4, "Number of instances")
-	ver := flag.String("version", "v1", "API version")
+	ver := flag.String("ver", "v1", "API version")
 	agentUrl := flag.String("agent", "http://192.168.99.100:8080/registration", "Submit Agent Location")
-	loc := flag.String("location", "192.168.99.100", "This API server Location")
+	ip := flag.String("ip", "", "This API server IP Address")
+	port = flag.Int("port", 3000, "This API server IP Address")
 
 	flag.Parse()
 
 	if *name == "" {
-		log.Panic("Missing service endpoint name: You must provide it as -service param.")
+		log.Panic("Missing service endpoint name: You must provide it with '-service' param.")
 		os.Exit(1)
 	}
 
 	var myLoc string
-	if *loc == "" {
+	if *ip == "" {
 		myLoc = getAddress()
 	} else {
-		myLoc = *loc
+		myLoc = *ip
 	}
 
-	myUrl := myLoc + ":" + strconv.Itoa(defPort)
+	myUrl := myLoc + ":" + strconv.Itoa(*port)
 	log.Println("Service API Location:", myUrl)
 
 	instance := builder.Instance{Capacity: *cap, Location:myUrl}
-	reg = &builder.Registration {
+	reg = &builder.Registration{
 		Service: *name,
 		Version: *ver,
 		Instances: []builder.Instance{instance},
 	}
 
-	return reg, agentUrl
+	return reg, agentUrl, port
 }
 
 
 func main() {
-	go builder.RegisterService(*agent, reg)
+	// Parse parameters
+	reg, agentUrl, port := buildReg()
 
-//	if err != nil {
-//		log.Println(err)
-//		log.Println("Could not register service.  Running in stand-alone mode.")
-//	} else {
-//		log.Println("Service registered to Agent")
-//	}
+	// Asynchronously register this service
+	go builder.RegisterService(*agentUrl, reg)
 
 	// Start API server
-	err := builder.StartServer(defPort)
+	err := builder.StartServer(*port)
 
 	if err != nil {
 		log.Fatal("Could not start API server: ", err.Error())
 		os.Exit(1)
 	}
 }
-
-
 
 
 func getAddress() string {
@@ -110,5 +73,6 @@ func getAddress() string {
 			return ipv4.String()
 		}
 	}
-	return defServ
+
+	panic("Could not find service IP address")
 }

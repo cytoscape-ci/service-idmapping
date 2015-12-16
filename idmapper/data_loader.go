@@ -1,7 +1,6 @@
 package idmapper
 
 import (
-	"fmt"
 	"encoding/csv"
 	"log"
 	"io"
@@ -23,7 +22,7 @@ type ConversionTable struct {
 
 
 func Load(mappingFileDir string) map[string]*ConversionTable {
-	fmt.Println("* Loading mapping data into memory...")
+	log.Println("* Loading mapping data into memory...")
 
 	tables := make(map[string]*ConversionTable)
 
@@ -35,19 +34,15 @@ func Load(mappingFileDir string) map[string]*ConversionTable {
 			parts := strings.Split(fName, "_")
 			parts2 := strings.Split(parts[1], ".")
 			speciesName := parts2[0]
-			fmt.Println(speciesName)
-
 			tables[speciesName] = newTable
+			log.Println(speciesName, "mapping table loaded.")
 		}
 	}
-	fmt.Println(len(tables))
-
 	return tables
 }
 
 
 func loadOneTable(mappingFile string) *ConversionTable {
-
 	targetColumns := []string{
 		"UniProtKB-AC", "UniProtKB-ID", "GeneID", "Ensembl", "Symbol", "LocusTag"}
 
@@ -89,13 +84,11 @@ func loadOneTable(mappingFile string) *ConversionTable {
 	mappingTable := createMap(targetColumns, cols, &baseTable)
 
 	conv := ConversionTable{ MappingTable:mappingTable }
-
 	baseTable = nil
-
-	log.Println("Mapping table loaded.")
 
 	return &conv
 }
+
 
 func buildBaseTable(rec []string, table *[][]string) {
 	*table = append(*table, rec)
@@ -106,9 +99,9 @@ func createMap(columns []string, allColumnNames []string, table *[][]string) map
 
 	mappingTable := make(map[string]map[string]MappingEntry)
 
-	indicies := getKeyIndicies(columns, allColumnNames)
+	indices := getKeyIndices(columns, allColumnNames)
 
-	for i, idx := range indicies {
+	for i, idx := range indices {
 
 		key2rec := make(map[string]MappingEntry)
 
@@ -121,7 +114,6 @@ func createMap(columns []string, allColumnNames []string, table *[][]string) map
 				key2rec[strings.ToUpper(key)] = createEntry(key, columnType, rec, allColumnNames)
 			}
 		}
-
 		mappingTable[columns[i]] = key2rec
 	}
 	return mappingTable
@@ -143,7 +135,6 @@ func createEntry(id string, columnType string, rec []string, columnNames []strin
 
 		}
 	}
-
 	return MappingEntry{In:id, InType:columnType, Matches:mapping}
 }
 
@@ -160,19 +151,19 @@ func createListEntry(in string) []string {
 	return result
 }
 
-func getKeyIndicies(keys []string, allColumns []string) []int {
-	indicies := make([]int, len(keys))
+func getKeyIndices(keys []string, allColumns []string) []int {
+	indices := make([]int, len(keys))
 
 	for idx, val := range keys {
 
 		for i, columnName := range allColumns {
 			if columnName == val {
-				indicies[idx] = i
+				indices[idx] = i
 				break
 			}
 		}
 	}
-	return indicies
+	return indices
 }
 
 

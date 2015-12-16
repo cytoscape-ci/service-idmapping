@@ -1,7 +1,6 @@
 FROM golang:1.5.2
 
 # Minimalistic REST API server for Cytoscape CI
-
 WORKDIR /go
 
 # This is the default GOPATH for this container.
@@ -17,4 +16,4 @@ RUN go build app.go
 EXPOSE 3000
 
 # Run it!
-CMD ./app -service=idmapping -location="192.168.99.100"
+CMD ./app -id=idmapping

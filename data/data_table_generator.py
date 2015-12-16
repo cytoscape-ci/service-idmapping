@@ -54,7 +54,8 @@ for key in UNIPROT_SOURCES:
 # Create mapping files
 for key in ncbi_map:
     ncbi_gene_info = ncbi_map[key]
-    ncbi_subset = ncbi_gene_info[["GeneID", "Symbol", "Full_name_from_nomenclature_authority"]].astype(str)
+    ncbi_subset = ncbi_gene_info[["GeneID", "Symbol", "LocusTag", "Synonyms", "dbXrefs", "chromosome", "map_location",
+                                  "description", "Full_name_from_nomenclature_authority"]].astype(str)
     
     # Merge and create new table
     merged = pd.merge(uniprot_map[key], ncbi_subset , left_on="GeneID", right_on="GeneID", how="outer")
@@ -64,4 +65,4 @@ for key in ncbi_map:
     df_final = df_final.drop("PubMed", 1)
     
     # Create one mapping file / species
-    df_final.to_csv("./data/idmapping_" + key.lower() +".tsv", sep='\t', index=False)
+    df_final.to_csv("./idmapping_" + key.lower() +".tsv", sep='\t', index=False)

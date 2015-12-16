@@ -53,13 +53,16 @@ func RegisterService(agentUrl string, reg *Registration) error {
 
 		if err == nil {
 			log.Println("Registered: ", result)
-			break
+			return nil
 		}
 
 		log.Println("Retry in 10 sec...")
 		time.Sleep(interval * time.Second)
+
+		retryCount++
 	}
 
+	log.Println("Could not register to Submit Agent.  Running in stand-alone mode.")
 	return nil
 }
 
