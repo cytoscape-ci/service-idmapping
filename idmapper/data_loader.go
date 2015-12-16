@@ -8,10 +8,13 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"io/ioutil"
 )
 
 const (
 	listSeparator = "; "
+	tablePrefix = "idmapping_"
+	tableExt = ".tsv"
 )
 
 type ConversionTable struct {
@@ -19,10 +22,34 @@ type ConversionTable struct {
 }
 
 
-func Load(mappingFile string) *ConversionTable {
+func Load(mappingFileDir string) map[string]*ConversionTable {
 	fmt.Println("* Loading mapping data into memory...")
 
-	targetColumns := []string{"UniProtKB-AC", "UniProtKB-ID", "GeneID", "Ensembl", "Symbol"}
+	tables := make(map[string]*ConversionTable)
+
+	files, _ := ioutil.ReadDir(mappingFileDir)
+	for _, f := range files {
+		fName := f.Name()
+		if strings.HasPrefix(fName, tablePrefix) {
+			newTable := loadOneTable(mappingFileDir + fName)
+			parts := strings.Split(fName, "_")
+			parts2 := strings.Split(parts[1], ".")
+			speciesName := parts2[0]
+			fmt.Println(speciesName)
+
+			tables[speciesName] = newTable
+		}
+	}
+	fmt.Println(len(tables))
+
+	return tables
+}
+
+
+func loadOneTable(mappingFile string) *ConversionTable {
+
+	targetColumns := []string{
+		"UniProtKB-AC", "UniProtKB-ID", "GeneID", "Ensembl", "Symbol", "LocusTag"}
 
 	f, err := os.Open(mappingFile)
 	if err != nil {
@@ -59,7 +86,6 @@ func Load(mappingFile string) *ConversionTable {
 		i++
 	}
 
-
 	mappingTable := createMap(targetColumns, cols, &baseTable)
 
 	conv := ConversionTable{ MappingTable:mappingTable }
@@ -67,7 +93,6 @@ func Load(mappingFile string) *ConversionTable {
 	baseTable = nil
 
 	log.Println("Mapping table loaded.")
-	checkMemory()
 
 	return &conv
 }
@@ -92,7 +117,8 @@ func createMap(columns []string, allColumnNames []string, table *[][]string) map
 			columnType := allColumnNames[idx]
 
 			if key != "" {
-				key2rec[key] = createEntry(key, columnType, rec, allColumnNames)
+				// Use upper case for keys.  (i.e., match is always case insensitive!)
+				key2rec[strings.ToUpper(key)] = createEntry(key, columnType, rec, allColumnNames)
 			}
 		}
 

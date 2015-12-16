@@ -25,8 +25,8 @@ var idMapper idmapper.IdMapper
 
 func init() {
 	// Initialize mapping table using resource file.
-	resourceFile := "./data/idmapping.tsv"
-	idMapper = idmapper.NewIdMapper(resourceFile)
+	resourceFileDir := "./data/"
+	idMapper = idmapper.NewIdMapper(resourceFileDir)
 	log.Println("Mapping table loaded.")
 }
 

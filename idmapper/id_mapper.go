@@ -1,4 +1,5 @@
 package idmapper
+import "strings"
 
 
 const(
@@ -6,14 +7,13 @@ const(
 )
 
 type IdMapper struct {
-
-	Table *ConversionTable
+	Tables map[string]*ConversionTable
 	Species string
 }
 
 func NewIdMapper(resourceFile string) (mapper IdMapper) {
-	mappingTable := Load(resourceFile)
-	return IdMapper{Table: mappingTable, Species:defaultSpecies}
+	mappingTables := Load(resourceFile)
+	return IdMapper{Tables: mappingTables}
 }
 
 func (mapper IdMapper) Map(values []string) MappingResult {
@@ -30,13 +30,19 @@ func (mapper IdMapper) Map(values []string) MappingResult {
 	for _, id := range values {
 		found := false
 
-		for _, table :=range mapper.Table.MappingTable {
-			match, exists := table[id]
+		// For each species, find match (ignore case, always upper)
+		for species, value := range mapper.Tables {
+			tbl := value
 
-			if exists {
-				matches = append(matches, match)
-				found = true
-				break
+			for _, table := range tbl.MappingTable {
+				match, exists := table[strings.ToUpper(id)]
+
+				if exists {
+					match.Species = species
+					matches = append(matches, match)
+					found = true
+					break
+				}
 			}
 		}
 
@@ -49,3 +55,4 @@ func (mapper IdMapper) Map(values []string) MappingResult {
 
 	return result
 }
+

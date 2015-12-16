@@ -15,8 +15,8 @@ const (
 
 	defAgentUrl = "http://localhost:8080/registration"
 
-	interval = 10
-	retryMax = 10
+	interval = 10 // Retry every 10 sec.
+	retryMax = 10 // Retry 10 times before give up.
 )
 
 

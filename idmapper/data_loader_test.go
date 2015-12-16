@@ -10,11 +10,10 @@ func TestLoad(t *testing.T) {
 
 	fmt.Println("Test start---------------")
 
-	resourceFile := "../data/idmapping.tsv"
-	table := Load(resourceFile)
+	resourceFile := "../data/"
+	tableMap := Load(resourceFile)
 
-
-	mapper := table.MappingTable
+	mapper := tableMap["human"].MappingTable
 	numKeys := len(mapper)
 
 

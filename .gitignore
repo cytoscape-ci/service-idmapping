@@ -99,7 +99,7 @@ Temporary Items
 
 data/.ipynb_checkpoints
 data/*.txt
-data/idmapping.tsv
+data/*.tsv
 
 
 app
