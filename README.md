@@ -105,7 +105,16 @@ Then access ```http://192.168.99.100:3000/map```.  You will see the following me
 
 (Since you need to _POST_ your data to use this service, you see this error message.)
 
- 
+To test, try the following command:
+
+```bash
+curl -H "Accept: application/json" -H "Content-type: application/json" -X \
+    POST -d '{"ids": ["P53_HUMAN", "TP53", "P04637", "7157fdsfds"]}' \
+    http://192.168.99.100:3000/map | jq .
+```
+
+(All in one line.)
+
 
 ### Register to _elsa_
 (TBD)
@@ -115,7 +124,7 @@ Then access ```http://192.168.99.100:3000/map```.  You will see the following me
 
 ```json
 {
-    "ids": [id1, id2, ...]
+    "ids": ["id1", "id2", ... ]
 }
 ```
 
