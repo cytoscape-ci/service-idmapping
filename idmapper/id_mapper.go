@@ -50,9 +50,7 @@ func (mapper IdMapper) Map(values []string) MappingResult {
 			unmatched = append(unmatched, id)
 		}
 	}
-
 	result := MappingResult{Matched:matches, Unmatched:unmatched}
 
 	return result
 }
-

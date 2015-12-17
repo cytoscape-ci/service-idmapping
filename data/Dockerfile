@@ -1,12 +1,19 @@
+#
+# Data volume container for ID Mapping service
+#
+#  This Container is only for building data sources from remote FTP server.
+#
 FROM python:3.5
 
 RUN apt-get update
-
 RUN pip install pandas
 
-RUN mkdir /tables
-WORKDIR /tables
+RUN mkdir -p /go/src/github.com/cytoscape-ci/service-go/data
+WORKDIR /go/src/github.com/cytoscape-ci/service-go/data
 
-ADD . /tables
+ADD . /go/src/github.com/cytoscape-ci/service-go/data
 
-CMD python ./data_table_generator.py
+# This starts the actual data download and preprecessing.
+RUN python ./data_table_generator.py
+
+CMD /bin/true

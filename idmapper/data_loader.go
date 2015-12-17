@@ -16,6 +16,8 @@ const (
 	tableExt = ".tsv"
 )
 
+var TargetColumns = []string{"UniProtKB-AC", "UniProtKB-ID", "GeneID", "Ensembl", "Symbol", "LocusTag"}
+
 type ConversionTable struct {
 	MappingTable map[string]map[string]MappingEntry
 }
@@ -43,8 +45,6 @@ func Load(mappingFileDir string) map[string]*ConversionTable {
 
 
 func loadOneTable(mappingFile string) *ConversionTable {
-	targetColumns := []string{
-		"UniProtKB-AC", "UniProtKB-ID", "GeneID", "Ensembl", "Symbol", "LocusTag"}
 
 	f, err := os.Open(mappingFile)
 	if err != nil {
@@ -81,7 +81,7 @@ func loadOneTable(mappingFile string) *ConversionTable {
 		i++
 	}
 
-	mappingTable := createMap(targetColumns, cols, &baseTable)
+	mappingTable := createMap(TargetColumns, cols, &baseTable)
 
 	conv := ConversionTable{ MappingTable:mappingTable }
 	baseTable = nil

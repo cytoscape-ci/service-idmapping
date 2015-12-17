@@ -1,39 +1,91 @@
-# Sample CI service Written in Go
+# Cytoscape CI Service Sample Implementation for Go Developers
+
+![](docs/cytoscape-flat-logo-orange.png) ![](docs/gopher-size_path.png)
+
 
 ## Introduction
 
-This is a sample CI Service implementation written in Go.  In this project, we use a simple ID mapping service as an example.
+This is a sample CI service implementation written in Go.  In this project, we use a simple ID mapping service as an example.
 
 
 ## Basic Design
+_Any_ type of RESTful API server can work as a part of Cytoscape CI system.  This means if you have existing API server, 
+the change required to use as a CI service is very small.
 
-### Service Package
+The followings are the building blocks of your CI service:
 
-### RESTful API server
+### 1. Actual Service Package
 
-### Registration
+For all types of services, it is a good idea to create a single-function, command-line tool first.  You can start with 
+ designing your function by defining the following:
+
+* Function - What is the function of your service?
+* Input - What are the parameters you need to pass for the tool?
+* Output - What is the output data user get?
 
 
+In this example, the goal is simple and clear:
+
+* Function: For given list of gene IDs, generate mappings to other set of IDs.  e.g., Entrez Gene ID to Ensemble ID
+* Input: List of IDs
+* Output: List of maps from input ID to other set of IDs.
+
+Once you decide, implement such function.  This portion of your code should work with or without RESTful server.
 
 
-----
+### 2. RESTful API Server
+Once your function works, wrap it with an API server code.  In Go, there are some nice and thin frameworks for implementing 
+RESTful API, like [Gin](https://gin-gonic.github.io/gin/).  You can choose any of those to do this job.  In this example, we simply use standard _net/http_ 
+package to implement API server.
+
+The requirement for this part is writing an API to consume and generate JSON. 
+
+
+### 3. Registration to _Submit Agent_
+When you finish writing the REST API server, now you are ready to register it to task submit agent for CI.  
+Currently, we have an [Erlang](http://www.erlang.org/) implementation of Submit Agent called 
+[elsa](https://github.com/cytoscape-ci/elsa).  To register your service, you can POST some required information 
+to the agent.
+
+In this example, there is a reusable module to do this task and you can use it if you just want to register single 
+server.
+
 
 # Sample Service Implementation
 
 ## ID Mapping Service
 
-As a sample service for Go developers, this repository has an sample ID Mapping service, which loads all mapping 
-data into memory and return result in JSON.
+As a sample service for Go developers, this repository contains complete code for simple ID Mapping service, 
+which loads all mapping data into memory and return result in JSON.
 
 Currently, the original data sources are [NCBI Gene](ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/) and 
 [UniprotKB](ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/).
 
 
-## How to Use
+## How to Run
 
-### Docker Container
+### 1. In single API server mode
+You can run this service as a single RESTful API server independent from Cytoscape CI.
 
-The easiest way to run this application on your local machine is using Docker.
+#### On your local machine
+
+* Requirments
+  * Go 1.5.x and later
+  * Python 3.5.x or newer
+    * pandas
+
+* Clone this repository
+* ```cd data```
+* Run this command to download and create mapping tables from NCBI and Uniprot:  ```python ./data_table_generator.py```
+* ```cd ..```
+* ```go build app.go```
+* ```./app```
+
+Then access ```http://localhost:3000/``` to check the server is actually working or not.
+
+
+#### Docker Container
+The easiest way to run this application is using Docker.
 
 Suppose you are using Docker host running on ```192.168.99.100```.
  

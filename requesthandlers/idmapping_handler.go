@@ -6,6 +6,7 @@ import (
 	"github.com/cytoscape-ci/service-go/idmapper"
 	"log"
 	"errors"
+	"strconv"
 )
 
 
@@ -43,7 +44,6 @@ func IdMappingHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-
 func post(w http.ResponseWriter, r *http.Request) {
 	var e map[string][]string
 
@@ -60,21 +60,33 @@ func mapping(w http.ResponseWriter, e map[string][]string) {
 	ids, exists := e["ids"]
 
 	if !exists {
-		code := 422
+		code := 400
 		res := getErrorMsg(code, "Could not decode your input data.", errors.New("ids field missing."))
 		http.Error(w, res, code)
 		return
 	}
 
+	inputSize := len(ids)
+
 	// Call actual mapper service
 	result := idMapper.Map(ids)
 
+	unmatchedSize := len(result.Unmatched)
+
+	// No match found.  Return 404.
+	if inputSize == unmatchedSize {
+		code := 404
+		res := getErrorMsg(code, "Could not find any match.", errors.New("There is no matching in the database."))
+		http.Error(w, res, code)
+		return
+	}
+
 	if err := json.NewEncoder(w).Encode(result); err != nil {
 		code := 500
-		res := getErrorMsg(code, "Could not parse result.", err)
+		res := getErrorMsg(code, "Could not parse your mapping result.  This may be a bug in this service.", err)
 		http.Error(w, res, code)
 	} else {
-		log.Println("Success: Mapping finished.")
+		log.Println("Success: Mapping finished for ", strconv.Itoa(len(ids)), " IDs.")
 	}
 }
 

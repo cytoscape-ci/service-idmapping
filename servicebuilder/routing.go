@@ -19,7 +19,7 @@ func StartServer(portNumber int) (err error) {
 
 	log.Println("Serving API on port ", portNumber)
 
-	portNumStr := strconv.Itoa(3000)
+	portNumStr := strconv.Itoa(portNumber)
 
 	err = http.ListenAndServe(":" + portNumStr, handler)
 
