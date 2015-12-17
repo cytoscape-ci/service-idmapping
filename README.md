@@ -1,10 +1,9 @@
 # Cytoscape CI Service Sample Implementation for Go Developers
 
-![](docs/cytoscape-flat-logo-orange.png) ![](docs/gopher-size_path.png)
+![](docs/cytoscape-flat-logo-orange.png) ![](docs/gopher-side_path.png)
 
 
 ## Introduction
-
 This is a sample CI service implementation written in Go.  In this project, we use a simple ID mapping service as an example.
 
 
@@ -85,13 +84,13 @@ Then access ```http://localhost:3000/``` to check the server is actually working
 
 
 #### Docker Container
-The easiest way to run this application is using Docker.
+The easiest way to run this application is using Docker.  Suppose you are using Docker host running on ```192.168.99.100```.
 
-Suppose you are using Docker host running on ```192.168.99.100```.
+Make sure you have _docker-compose_ installed.
  
 ```bash
-docker build -t cytoscape/idmapper .
-docker run -p 3000:3000 -t cytoscape/idmapping 
+docker-compose build
+docker-compose up 
 ```
 
 Then access ```http://192.168.99.100:3000/map```.  You will see the following message:
@@ -444,7 +443,7 @@ Usually this should not happen.  In Go, if critical panic happens due to bugs, t
   ```json
   {
     "code": 500,
-    "message": "Something wrong happened to the service.  Now is the good time to call admin..."
+    "message": "Something wrong happened to the service.  Now is the good time to call admin...",
     "error": "(stack trace, panic message, heap dump, etc.)"
   }
   ```
