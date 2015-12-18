@@ -124,7 +124,8 @@ curl -H "Accept: application/json" -H "Content-type: application/json" -X \
 
 ```json
 {
-    "ids": ["id1", "id2", ... ]
+    "ids": ["id1", "id2", ... ],
+    "idTypes": ["GeneID", "Synonyms", ... ]
 }
 ```
 
@@ -148,8 +149,8 @@ A list of IDs as text.  You can mix multiple ID types, and multiple species in a
 * Mouse (Mus musculus: 10090)
 
 
-#### _filter_
-(TODO)
+#### _inTypes_ (Optional)
+If you use this optional field, the mapper only returns IDs you specified.
 
 
 ### Result

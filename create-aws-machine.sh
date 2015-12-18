@@ -13,7 +13,7 @@ aws_secret=$(grep $SECRET ~/.aws/credentials | cut -d "=" -f 2 | tr -d '[[:space
 AWS_VPC="vpc-194d467b"
 AWS_SECURITY_GROUP="ci-http"
 
-aws_price="0.04"
+aws_price="0.05"
 aws_instance_type="c4.large"
 
 
@@ -60,7 +60,7 @@ elif [ "$2" == "aws" ]; then
         --amazonec2-secret-key $aws_secret \
         --amazonec2-vpc-id $AWS_VPC \
         --amazonec2-region us-west-2 \
-        --amazonec2-zone b \
+        --amazonec2-zone c \
         --amazonec2-root-size 30 \
         --amazonec2-security-group $AWS_SECURITY_GROUP \
         --amazonec2-spot-price $aws_price --amazonec2-instance-type $aws_instance_type $1
