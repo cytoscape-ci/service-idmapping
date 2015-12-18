@@ -13,6 +13,9 @@ import (
 const (
 	GET = "GET"
 	POST = "POST"
+
+	ids = "ids"
+	idTypes = "idTypes"
 )
 
 type Message struct {
@@ -49,7 +52,7 @@ func post(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.NewDecoder(r.Body).Decode(&e); err != nil {
 		code := 422
-		res := getErrorMsg(code, "Could not decode your input data.", err)
+		res := getErrorMsg(code, "Could not decode your input data.  You should provide 'ids' and optional 'idTypes' list of strings.", err)
 		http.Error(w, res, code)
 	} else {
 		mapping(w, e)
@@ -57,7 +60,8 @@ func post(w http.ResponseWriter, r *http.Request) {
 }
 
 func mapping(w http.ResponseWriter, e map[string][]string) {
-	ids, exists := e["ids"]
+	ids, exists := e[ids]
+	filter, _ := e[idTypes]
 
 	if !exists {
 		code := 400
@@ -69,7 +73,7 @@ func mapping(w http.ResponseWriter, e map[string][]string) {
 	inputSize := len(ids)
 
 	// Call actual mapper service
-	result := idMapper.Map(ids)
+	result := idMapper.Map(ids, filter)
 
 	unmatchedSize := len(result.Unmatched)
 

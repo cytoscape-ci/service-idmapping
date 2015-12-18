@@ -1,6 +1,7 @@
 package idmapper
-import "strings"
 
+
+import "strings"
 
 const(
 	defaultSpecies = "homo sapiens"
@@ -16,12 +17,12 @@ func NewIdMapper(resourceFile string) (mapper IdMapper) {
 	return IdMapper{Tables: mappingTables}
 }
 
-func (mapper IdMapper) Map(values []string) MappingResult {
+func (mapper IdMapper) Map(values []string, filter []string) MappingResult {
 
-	speciesName := mapper.Species
-	if speciesName == "" {
-		speciesName = defaultSpecies
-	}
+//	speciesName := mapper.Species
+//	if speciesName == "" {
+//		speciesName = defaultSpecies
+//	}
 
 	var matches []MappingEntry
 
@@ -39,7 +40,14 @@ func (mapper IdMapper) Map(values []string) MappingResult {
 
 				if exists {
 					match.Species = species
-					matches = append(matches, match)
+					match.In = id
+
+					if len(filter) > 0 {
+						matches = append(matches, *filterResult(match, filter))
+					} else {
+						matches = append(matches, *match)
+					}
+
 					found = true
 					break
 				}
@@ -53,4 +61,22 @@ func (mapper IdMapper) Map(values []string) MappingResult {
 	result := MappingResult{Matched:matches, Unmatched:unmatched}
 
 	return result
+}
+
+func filterResult(entry *MappingEntry, filter []string) (*MappingEntry) {
+
+
+	filtered := MappingEntry{Species: entry.Species, In: entry.In, InType: entry.InType}
+	matches := make(map[string]interface{})
+
+	for _, idType := range filter {
+		val := entry.Matches[idType]
+		if val != nil {
+			matches[idType] = val
+		}
+	}
+
+	filtered.Matches = matches
+
+	return &filtered
 }

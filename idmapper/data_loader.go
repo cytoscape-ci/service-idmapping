@@ -12,14 +12,15 @@ import (
 
 const (
 	listSeparator = "; "
+	listSeparatorNcbi = "|"
 	tablePrefix = "idmapping_"
 	tableExt = ".tsv"
 )
 
-var TargetColumns = []string{"UniProtKB-AC", "UniProtKB-ID", "GeneID", "Ensembl", "Symbol", "LocusTag"}
+var TargetColumns = []string{"UniProtKB-AC", "UniProtKB-ID", "GeneID", "Ensembl", "Symbol", "LocusTag", "Synonyms"}
 
 type ConversionTable struct {
-	MappingTable map[string]map[string]MappingEntry
+	MappingTable map[string]map[string]*MappingEntry
 }
 
 
@@ -95,23 +96,36 @@ func buildBaseTable(rec []string, table *[][]string) {
 }
 
 
-func createMap(columns []string, allColumnNames []string, table *[][]string) map[string]map[string]MappingEntry {
+func createMap(columns []string, allColumnNames []string, table *[][]string) map[string]map[string]*MappingEntry {
 
-	mappingTable := make(map[string]map[string]MappingEntry)
+	mappingTable := make(map[string]map[string]*MappingEntry)
 
 	indices := getKeyIndices(columns, allColumnNames)
 
 	for i, idx := range indices {
 
-		key2rec := make(map[string]MappingEntry)
+		key2rec := make(map[string]*MappingEntry)
 
 		for _, rec := range *table {
 			key := rec[idx]
+
+
 			columnType := allColumnNames[idx]
 
 			if key != "" {
-				// Use upper case for keys.  (i.e., match is always case insensitive!)
-				key2rec[strings.ToUpper(key)] = createEntry(key, columnType, rec, allColumnNames)
+				// Special case: list keys (many-to-many)
+				if strings.Contains(key, listSeparatorNcbi) {
+					synonymList := createListEntry(key, listSeparatorNcbi)
+					if len(synonymList) != 0 {
+						entryPtr := createEntry(synonymList[0], columnType, rec, allColumnNames)
+						for _, synonym := range synonymList {
+							key2rec[strings.ToUpper(synonym)] = entryPtr
+						}
+					}
+				} else {
+					// Use upper case for keys.  (i.e., match is always case insensitive!)
+					key2rec[strings.ToUpper(key)] = createEntry(key, columnType, rec, allColumnNames)
+				}
 			}
 		}
 		mappingTable[columns[i]] = key2rec
@@ -119,30 +133,32 @@ func createMap(columns []string, allColumnNames []string, table *[][]string) map
 	return mappingTable
 }
 
-func createEntry(id string, columnType string, rec []string, columnNames []string) (entry MappingEntry) {
+func createEntry(id string, columnType string, rec []string, columnNames []string) (entry *MappingEntry) {
 
 	mapping := make(map[string]interface{})
 
 	for idx, val := range rec {
-		if val != "" && val != id && val != "-" {
+		if val != "" && val != "-" {
 			idType := columnNames[idx]
 
 			if strings.Contains(val, listSeparator) {
-				mapping[idType] = createListEntry(val)
+				mapping[idType] = createListEntry(val, listSeparator)
+			} else if strings.Contains(val, listSeparatorNcbi) {
+				mapping[idType] = createListEntry(val, listSeparatorNcbi)
 			} else {
 				mapping[idType] = val
 			}
 
 		}
 	}
-	return MappingEntry{In:id, InType:columnType, Matches:mapping}
+	return &MappingEntry{In:id, InType:columnType, Matches:mapping}
 }
 
-func createListEntry(in string) []string {
+func createListEntry(in string, sep string) []string {
 
 	result := make([]string, 0)
 
-	parts := strings.Split(in, listSeparator)
+	parts := strings.Split(in, sep)
 	for _, val := range parts {
 		if val != "" && val != "-" {
 			result = append(result, val)

@@ -2,6 +2,6 @@ package idmapper
 
 type Mapper interface {
 
-	Map(values []string) MappingResult
+	Map(values []string, filter []string) MappingResult
 
 }
