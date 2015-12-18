@@ -86,30 +86,48 @@ Then access ```http://localhost:3000/``` to check the server is actually working
 #### Docker Container
 The easiest way to run this application is using Docker.  Suppose you are using Docker host running on ```192.168.99.100```.
 
-Make sure you have _docker-compose_ installed.
- 
+##### 1. Prepare Docker Host
+You need a Docker host to run the application using Docker Compose.
+
+* System Requirements
+    * 1 or 2 processors
+    * 3+ GB of memory
+    * Fast, stable network connection
+
+In general, this application is I/O intensive, and you do not need a very fast processors to run this application.
+
+I recommend to use [Docker Machine](https://docs.docker.com/machine/) to setup your host.
+
+##### 2. Run the Service
+Make sure you have _docker-compose_ and _git_ installed.
+
+The following commands automatically build and run new service in daemon mode.
+
 ```bash
+git clone git@github.com:cytoscape-ci/service-go.git
+cd service-go
+
 docker-compose build
-docker-compose up 
+docker-compose up -d
 ```
 
-Then access ```http://192.168.99.100:3000/map```.  You will see the following message:
+Then access the endpoint, e.g. ```http://192.168.99.100:3000/```.  You will see the following message:
 
 ```json
 {
-    "code": 405,
-    "message": "You need to POST your data to use this service.",
-    "error": "Invalid HTTP method used: GET"
+    name: "Gene ID Mapping service",
+    version: "v1",
+    description: "Converts list of IDs into other types of IDs.",
+    documents: "https://github.com/cytoscape-ci/service-go"
 }
 ```
 
-(Since you need to _POST_ your data to use this service, you see this error message.)
 
-To test, try the following command:
+To test, try the following command (you need curl and jq to run this):
 
 ```bash
 curl -H "Accept: application/json" -H "Content-type: application/json" -X \
-    POST -d '{"ids": ["P53_HUMAN", "TP53", "P04637", "7157fdsfds"]}' \
+    POST -d '{"ids": ["P53_HUMAN", "TP53", "P04637", "7157"]}' \
     http://192.168.99.100:3000/map | jq .
 ```
 
@@ -125,7 +143,17 @@ directly send your _POST_ requests to it.
 
 
 #### CI service mode
+If you have a running instance of elsa, the registration process is (semi) automatic.  You can specify the following 
+command-line options to register the service to _elsa_.
 
+(TBD)
+
+Options
+
+* id - ID of this service (e.g., _idmapping_)
+* ver - version of this API (e.g., _v1_)
+* port - Port number of this service
+* agent - Location of elsa instance
 
 
 ## How to use the service
