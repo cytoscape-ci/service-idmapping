@@ -14,6 +14,7 @@ func StartServer(portNumber int) (err error) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", req.StatusHandler)
 	mux.HandleFunc("/map", req.IdMappingHandler)
+	mux.HandleFunc("/labels", req.LabelGeneratorHandler)
 
 	handler := cors.Default().Handler(mux)
 
