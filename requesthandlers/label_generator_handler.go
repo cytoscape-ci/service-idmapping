@@ -6,7 +6,7 @@ import (
 	"log"
 	"errors"
 	"strconv"
-	"github.com/cytoscape-ci/service-go/idmapper"
+	"github.com/cytoscape-ci/service-idmapping/idmapper"
 )
 
 

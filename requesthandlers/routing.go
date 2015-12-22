@@ -1,9 +1,8 @@
-package servicebuilder
+package handlers
 
 import (
 	"net/http"
 	"log"
-	req "github.com/cytoscape-ci/service-go/requesthandlers"
 	"github.com/rs/cors"
 	"strconv"
 )
@@ -12,9 +11,9 @@ import (
 func StartServer(portNumber int) (err error) {
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", req.StatusHandler)
-	mux.HandleFunc("/map", req.IdMappingHandler)
-	mux.HandleFunc("/labels", req.LabelGeneratorHandler)
+	mux.HandleFunc("/", StatusHandler)
+	mux.HandleFunc("/map", IdMappingHandler)
+	mux.HandleFunc("/labels", LabelGeneratorHandler)
 
 	handler := cors.Default().Handler(mux)
 

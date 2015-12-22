@@ -4,7 +4,7 @@
 mappings:
   build: ./data
   volumes:
-    - /go/src/github.com/cytoscape-ci/service-go/data
+    - /go/src/github.com/cytoscape-ci/service-idmapping/data
 
 idmapper:
   build: .

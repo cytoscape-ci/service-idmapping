@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 	"encoding/json"
-	"github.com/cytoscape-ci/service-go/idmapper"
+	"github.com/cytoscape-ci/service-idmapping/idmapper"
 	"log"
 	"errors"
 	"strconv"

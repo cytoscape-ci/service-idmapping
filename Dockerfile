@@ -4,11 +4,12 @@ FROM golang:1.5.2
 WORKDIR /go
 
 # This is the default GOPATH for this container.
-ADD . /go/src/github.com/cytoscape-ci/service-go
-WORKDIR /go/src/github.com/cytoscape-ci/service-go
+ADD . /go/src/github.com/cytoscape-ci/service-idmapping
+WORKDIR /go/src/github.com/cytoscape-ci/service-idmapping
 
 # Install Go dependencies
 RUN go get github.com/rs/cors
+RUN go get github.com/cytoscape-ci/elsa-client
 
 # Build the server for this environment
 RUN go build app.go
