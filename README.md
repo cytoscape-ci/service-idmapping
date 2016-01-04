@@ -98,14 +98,100 @@ In general, this application is I/O intensive, and you do not need a very fast p
 
 I recommend to use [Docker Machine](https://docs.docker.com/machine/) to setup your host.
 
+----
+
+###### For the first-time Docker Machine users
+
+Here is how to create new Docker host using VirtualBox:
+
+* Install everything using [Docker Toolbox](https://www.docker.com/docker-toolbox)
+* Open terminal
+* Make sure you have docker-machine and docker-compose on your machine  
+
+```bash
+> docker-machine -v                                                        ✱
+docker-machine version 0.5.5, build 02c4254
+
+> docker-compose -v                                                        ✱
+docker-compose version 1.5.2, build 7240ff3
+```
+
+* Create a new Docker host using VirtualBox driver
+
+```bash
+> docker-machine create -d virtualbox dev2                                 ✱
+Running pre-create checks...
+Creating machine...
+(dev2) Copying /Users/kono/.docker/machine/cache/boot2docker.iso to /Users/kono/.docker/machine/machines/dev2/boot2docker.iso...
+(dev2) Creating VirtualBox VM...
+(dev2) Creating SSH key...
+(dev2) Starting VM...
+Waiting for machine to be running, this may take a few minutes...
+Machine is running, waiting for SSH to be available...
+Detecting operating system of created instance...
+Detecting the provisioner...
+Provisioning with boot2docker...
+Copying certs to the local machine directory...
+Copying certs to the remote machine...
+Setting Docker configuration on the remote daemon...
+Checking connection to Docker...
+Docker is up and running!
+To see how to connect Docker to this machine, run: docker-machine env dev2
+```
+
+* Specify the machie as your target Docker host
+
+
+```bash
+> eval "$(docker-machine env dev2)"
+```
+
+* Make sure you have access to that Docker host
+
+```bash
+> docker info                                                            ⏎ ✱
+Containers: 0
+Images: 0
+Server Version: 1.9.1
+Storage Driver: aufs
+ Root Dir: /mnt/sda1/var/lib/docker/aufs
+ Backing Filesystem: extfs
+ Dirs: 0
+ Dirperm1 Supported: true
+Execution Driver: native-0.2
+Logging Driver: json-file
+Kernel Version: 4.1.13-boot2docker
+Operating System: Boot2Docker 1.9.1 (TCL 6.4.1); master : cef800b - Fri Nov 20 19:33:59 UTC 2015
+CPUs: 1
+Total Memory: 996.2 MiB
+Name: dev2
+ID: QQER:IUDG:JNRA:YCAD:K4LS:QHNT:U5X6:WHGS:KRZM:DDKD:J5RP:ZYSY
+Debug mode (server): true
+ File Descriptors: 11
+ Goroutines: 18
+ System Time: 2016-01-04T19:14:07.938448467Z
+ EventsListeners: 0
+ Init SHA1:
+ Init Path: /usr/local/bin/docker
+ Docker Root Dir: /mnt/sda1/var/lib/docker
+Username: keiono
+Registry: https://index.docker.io/v1/
+Labels:
+ provider=virtualbox
+```
+
+Now you are ready to use _compose_.
+
+----
+
 ##### 2. Run the Service
 Make sure you have _docker-compose_ and _git_ installed.
 
 The following commands automatically build and run new service in daemon mode.
 
 ```bash
-git clone git@github.com:cytoscape-ci/service-go.git
-cd service-go
+git clone git@github.com:cytoscape-ci/service-idmapping.git
+cd service-idmapping
 
 docker-compose build
 docker-compose up -d
@@ -151,6 +237,7 @@ command-line options to register the service to _elsa_.
 Options
 
 * id - ID of this service (e.g., _idmapping_)
+* ip - IP address of this server
 * ver - version of this API (e.g., _v1_)
 * port - Port number of this service
 * agent - Location of elsa instance
@@ -174,6 +261,7 @@ Options
     documents: "https://github.com/cytoscape-ci/service-go"
 }
 ```
+
 
 #### _/map_
 
