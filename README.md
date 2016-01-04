@@ -201,15 +201,14 @@ Then access the endpoint, e.g. ```http://192.168.99.100:3000/```.  You will see 
 
 ```json
 {
-    name: "Gene ID Mapping service",
-    version: "v1",
-    description: "Converts list of IDs into other types of IDs.",
-    documents: "https://github.com/cytoscape-ci/service-go"
+    "name": "Gene ID Mapping service",
+    "version": "v1",
+    "description": "Converts list of IDs into other types of IDs.",
+    "documents": "https://github.com/cytoscape-ci/service-go"
 }
 ```
 
-
-To test, try the following command (you need curl and jq to run this):
+To test, try the following command.  You need [curl](http://curl.haxx.se/) and [jq](https://stedolan.github.io/jq/) to run this.
 
 ```bash
 curl -H "Accept: application/json" -H "Content-type: application/json" -X \
