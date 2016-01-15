@@ -118,8 +118,12 @@ docker-compose version 1.5.2, build 7240ff3
 
 * Create a new Docker host using VirtualBox driver
 
+__Important: You have to assign at least 3GB of memory for optimal performance__
+
+* Usememory option, such as ```--virtualbox-memory 3000```
+
 ```bash
-> docker-machine create -d virtualbox dev2                                 ✱
+> docker-machine create -d virtualbox --virtualbox-memory 3000 dev2                                 ✱
 Running pre-create checks...
 Creating machine...
 (dev2) Copying /Users/kono/.docker/machine/cache/boot2docker.iso to /Users/kono/.docker/machine/machines/dev2/boot2docker.iso...
@@ -139,7 +143,7 @@ Docker is up and running!
 To see how to connect Docker to this machine, run: docker-machine env dev2
 ```
 
-* Specify the machie as your target Docker host
+* Specify the machine as your target Docker host
 
 
 ```bash

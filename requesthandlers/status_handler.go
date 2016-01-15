@@ -20,7 +20,7 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 		Name:"Gene ID Mapping service",
 		Version:"v1",
 		Description:"Converts list of IDs into other types of IDs.",
-		Documents: "https://github.com/cytoscape-ci/service-go",
+		Documents: "https://github.com/cytoscape-ci/service-idmapping",
 	}
 
 	if r.Method == "GET" {

@@ -5,20 +5,17 @@ import (
 	"os"
 	"strconv"
 	"flag"
-	elsa "github.com/cytoscape-ci/elsa-client"
+	elsa "github.com/cytoscape-ci/elsa-client/reg"
 	handlers "github.com/cytoscape-ci/service-idmapping/requesthandlers"
 )
 
 
-
 func main() {
-	reg := elsa.NewRegistrationFromCommandline()
 
-	elsaLocation := flag.String("agent", "http://192.168.99.100:8080/registration", "Agent URL")
+	elsaLocation := flag.String("agent", "http://localhost:8080/registration", "Agent URL")
 	flag.Parse()
 
 	var servicePort int
-
 	portFlag := flag.Lookup("port")
 
 	if portFlag == nil {
@@ -33,7 +30,7 @@ func main() {
 	}
 
 	// Asynchronously register this service to Submit Agent
-	go elsa.RegisterService(*elsaLocation, reg, elsa.RetrySetting{})
+	go elsa.Register(*elsaLocation)
 
 	// Start API server
 	serverErr := handlers.StartServer(servicePort)

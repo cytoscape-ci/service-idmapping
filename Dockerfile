@@ -9,7 +9,7 @@ WORKDIR /go/src/github.com/cytoscape-ci/service-idmapping
 
 # Install Go dependencies
 RUN go get github.com/rs/cors
-RUN go get github.com/cytoscape-ci/elsa-client
+RUN go get github.com/cytoscape-ci/elsa-client/reg
 
 # Build the server for this environment
 RUN go build app.go
@@ -17,4 +17,4 @@ RUN go build app.go
 EXPOSE 3000
 
 # Run it!
-CMD ./app -id=idmapping
+CMD ./app -agent http://52.35.61.6:8080
