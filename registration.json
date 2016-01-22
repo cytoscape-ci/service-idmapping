@@ -3,7 +3,7 @@
   "version": "v1",
   "instances": [
     {
-      "location": "http://52.24.200.81:3000",
+      "location": "http://52.11.197.18:3000",
       "capacity": "4"
     }
   ]

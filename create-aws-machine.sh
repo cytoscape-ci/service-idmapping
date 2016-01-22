@@ -14,7 +14,7 @@ AWS_VPC="vpc-194d467b"
 AWS_SECURITY_GROUP="ci-http"
 
 aws_price="0.05"
-aws_instance_type="c4.large"
+aws_instance_type="c3.large"
 
 
 

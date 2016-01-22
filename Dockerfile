@@ -17,4 +17,4 @@ RUN go build app.go
 EXPOSE 3000
 
 # Run it!
-CMD ./app -agent http://52.35.61.6:8080
+CMD ./app -agent http://52.35.61.6:8080/registration
