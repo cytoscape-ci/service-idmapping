@@ -13,7 +13,7 @@ aws_secret=$(grep $SECRET ~/.aws/credentials | cut -d "=" -f 2 | tr -d '[[:space
 AWS_VPC="vpc-194d467b"
 AWS_SECURITY_GROUP="ci-http"
 
-aws_price="0.05"
+aws_price="0.04"
 aws_instance_type="c3.large"
 
 

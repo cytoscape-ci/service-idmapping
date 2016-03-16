@@ -1,4 +1,15 @@
+
 # coding: utf-8
+
+# # Data table generator for ID Mapping Service
+# 
+# ## Introduction
+# This is a python script to generate data maping table for this GO service.
+# 
+# To use this with the Docker Compose command, please export this as a standard python script. 
+# 
+
+# In[1]:
 
 # Source data set builder for in-memory data table used in ID Mapper.
 import pandas as pd
@@ -13,7 +24,8 @@ NCBI_SOURCES = {
     "HUMAN": NCBI_FTP + "Mammalia/Homo_sapiens.gene_info.gz",
     "YEAST": NCBI_FTP + "Fungi/Saccharomyces_cerevisiae.gene_info.gz",
     "MOUSE": NCBI_FTP + "Mammalia/Mus_musculus.gene_info.gz",
-    "FLY": NCBI_FTP + "Invertebrates/Drosophila_melanogaster.gene_info.gz"
+    "FLY": NCBI_FTP + "Invertebrates/Drosophila_melanogaster.gene_info.gz",
+    "ARATH": NCBI_FTP + "Plants/Arabidopsis_thaliana.gene_info.gz"
 }
 
 # Uniprot ID Mapping
@@ -21,7 +33,8 @@ UNIPROT_SOURCES = {
     "HUMAN": UNI_FTP + "HUMAN_9606_idmapping_selected.tab.gz",
     "MOUSE": UNI_FTP + "MOUSE_10090_idmapping_selected.tab.gz",
     "YEAST": UNI_FTP + "YEAST_559292_idmapping_selected.tab.gz",
-    "FLY": UNI_FTP + "DROME_7227_idmapping_selected.tab.gz"
+    "FLY": UNI_FTP + "DROME_7227_idmapping_selected.tab.gz",
+    "ARATH": UNI_FTP + "ARATH_3702_idmapping_selected.tab.gz"
 }
 
 # Get all data sets from the FTP server
@@ -34,6 +47,7 @@ UNIPROT_COLUMNS = ['UniProtKB-AC','UniProtKB-ID','GeneID','RefSeq','GI','PDB','G
     'Ensembl','Ensembl_TRS','Ensembl_PRO','Additional PubMed']
 
 ## Load NCBI data first.
+
 ncbi_map = {}
 
 for key in NCBI_SOURCES:
@@ -41,6 +55,9 @@ for key in NCBI_SOURCES:
     local_filename, headers = urllib.request.urlretrieve(NCBI_SOURCES[key])
     ncbi_map[key] = pd.read_csv(local_filename, sep='\t', low_memory=False, 
                              names=NCBI_COLUMNS, comment='#', compression="gzip")
+
+
+# In[2]:
 
 # Load UNIPROT data next...
 uniprot_map = {}
@@ -51,11 +68,13 @@ for key in UNIPROT_SOURCES:
     uniprot_map[key] = pd.read_csv(local_filename, 
                      sep="\t", names=UNIPROT_COLUMNS, low_memory=False, compression="gzip")
 
-# Create mapping files
+
+# In[3]:
+
 for key in ncbi_map:
     ncbi_gene_info = ncbi_map[key]
-    ncbi_subset = ncbi_gene_info[["GeneID", "Symbol", "LocusTag", "Synonyms", "dbXrefs", "chromosome", "map_location",
-                                  "description", "Full_name_from_nomenclature_authority", "tax_id", "type_of_gene"]].astype(str)
+    ncbi_subset = ncbi_gene_info[["GeneID", "Symbol", "LocusTag", "Synonyms", "chromosome", "map_location",
+                "description", "Full_name_from_nomenclature_authority"]].astype(str)
     
     # Merge and create new table
     merged = pd.merge(uniprot_map[key], ncbi_subset , left_on="GeneID", right_on="GeneID", how="outer")
@@ -66,3 +85,4 @@ for key in ncbi_map:
     
     # Create one mapping file / species
     df_final.to_csv("./idmapping_" + key.lower() +".tsv", sep='\t', index=False)
+
